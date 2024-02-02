@@ -16,17 +16,17 @@ SCRIPT_PATH="$(find ~/ -name "custom-terminal")/files"
 
 # Checks for needed dependencies
 ABORT=false
-{ which which 2> /dev/null; } || { printf "${red_arrow} 'which' not found, is it installed?"; ABORT=true; }
-{ which make 2> /dev/null; } || { printf "${red_arrow} 'make' not found, is it installed?"; ABORT=true; }
-{ which zsh 2> /dev/null; } || { printf "${red_arrow} 'zsh' not found, is it installed?"; ABORT=true; }
-{ which git 2> /dev/null; } || { printf "${red_arrow} 'git' not found, is it installed?"; ABORT=true; }
+{ which which 2> /dev/null; } || { printf "${red_arrow} 'which' not found, is it installed?\n"; ABORT=true; }
+{ which make 2> /dev/null; } || { printf "${red_arrow} 'make' not found, is it installed?\n"; ABORT=true; }
+{ which zsh 2> /dev/null; } || { printf "${red_arrow} 'zsh' not found, is it installed?\n"; ABORT=true; }
+{ which git 2> /dev/null; } || { printf "${red_arrow} 'git' not found, is it installed?\n"; ABORT=true; }
 if [ "$ABORT" == true ]; then
 	printf "${red_arrow} Such dependencies must be resolved\nExiting...\n"
 	exit 1;
 fi
 
 # Prompts the user for the prompt choice
-printf "${cyan_arrow} What prompt should the terminal have?"
+printf "${cyan_arrow} What prompt should the terminal have?\n"
 echo " [1] Costumized lean style (less misalignment prone)"
 echo " [2] Powerline style (more stylish)"
 while true; do
@@ -40,32 +40,32 @@ done
 
 # Check if rust's cargo already exists, install it otherwise
 { which cargo 2> /dev/null; } || {
-	printf "${cyan_arrow} Rust's cargo not found, installing it now..."
+	printf "${cyan_arrow} Rust's cargo not found, installing it now...\n"
 	curl https://sh.rustup.rs -sSf | sh -s -- -y
 	source "$HOME/.cargo/env"
-} || { printf "${red_arrow} Failed to install rust's cargo, exiting..."; exit 1; }
+} || { printf "${red_arrow} Failed to install rust's cargo, exiting...\n"; exit 1; }
 
 # Install some commands with the cargo package manager
 {
-	printf "${cyan_arrow} Installing and building better basic terminal commands with cargo..."
+	printf "${cyan_arrow} Installing and building better basic terminal commands with cargo...\n"
 	cargo install lsd
 	cargo install --locked bat
 	cargo install fd-find
-} || { printf "${red_arrow} Failed to build from cargo, exiting..."; exit 1; }
+} || { printf "${red_arrow} Failed to build from cargo, exiting...\n"; exit 1; }
 
 # Clone plugins from the git
 {
-	printf "${cyan_arrow} Cloning and installing zsh plugins from git"
+	printf "${cyan_arrow} Cloning and installing zsh plugins from git\n"
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-} || { printf "${red_arrow} Failed to clone needed repositories from git, exiting..."; exit 1; }
+} || { printf "${red_arrow} Failed to clone needed repositories from git, exiting...\n"; exit 1; }
 
 # Move the configuration files to their destination
 {
-	printf "${cyan_arrow} Moving the config files to their destination"
+	printf "${cyan_arrow} Moving the config files to their destination\n"
 	\cp -r "$SCRIPT_PATH/.zshrc" "$HOME/"
 	\cp -r "$SCRIPT_PATH/custom/"*.zsh ~/.oh-my-zsh/custom/
 
@@ -81,11 +81,11 @@ done
 	fi
 	\cp -r "$SCRIPT_PATH/.config/"* "$HOME/.config/"
 	
-} || { printf "${red_arrow} Failed to copy essential config files, exiting..."; exit 1; }
+} || { printf "${red_arrow} Failed to copy essential config files, exiting...\n"; exit 1; }
 
 # Prompts the user for changing their default terminal
 echo
-printf "${cyan_arrow} You will be prompted to enter your password in order to change the default terminal to .zsh"
+printf "${cyan_arrow} You will be prompted to enter your password in order to change the default terminal to .zsh\n"
 while true; do
 {
 	chsh -s "$(which zsh)"
@@ -93,4 +93,4 @@ while true; do
 break
 done
 
-printf "${cyan} Finished installing terminal${rs}"
+printf "${cyan} Finished installing terminal${rs}\n"
