@@ -10,13 +10,13 @@ cyan_arrow=" \033[0;96m>${rs}"
 red_arrow=" \033[0;91m>${rs}"
 
 printf "${cyan} Neatly configured terminal installation script${rs}\n"
-printf "  Config and script made by \033[1;36m\033[4;36mHaise777${rs}\n\n"
+printf "       Config and script made by \033[1;36m\033[4;36mHaise777${rs}\n\n"
 
 SCRIPT_PATH="$(find ~/ -name "custom-terminal")/files"
 
 # Checks for needed dependencies
 ABORT=false
-{ which which 2> /dev/null; } || { printf "${red_arrow} 'which' not found, is it installed?\n"; ABORT=true; }
+{ which which 2> /dev/null; } || { printf "${red_arrow} 'which' not found, it is needed to check for installed dependencies\n"; exit 1; }
 { which make 2> /dev/null; } || { printf "${red_arrow} 'make' not found, is it installed?\n"; ABORT=true; }
 { which zsh 2> /dev/null; } || { printf "${red_arrow} 'zsh' not found, is it installed?\n"; ABORT=true; }
 { which git 2> /dev/null; } || { printf "${red_arrow} 'git' not found, is it installed?\n"; ABORT=true; }
