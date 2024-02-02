@@ -5,7 +5,7 @@
 
 #Define text color variables to use
 rs='\033[0m'
-gray='\033[0;30m'
+detail='\033[0;36m'
 yellow='\033[0;33m'
 cyan='\033[0;96m'
 cyan_arrow=" \033[0;96m>${rs}"
@@ -22,6 +22,8 @@ ABORT=false
 { which make &> /dev/null; } || { printf "${red_arrow} ${yellow}'make'${rs} not found, is it installed?\n"; ABORT=true; }
 { which zsh &> /dev/null; } || { printf "${red_arrow} ${yellow}'zsh'${rs} not found, is it installed?\n"; ABORT=true; }
 { which git &> /dev/null; } || { printf "${red_arrow} ${yellow}'git'${rs} not found, is it installed?\n"; ABORT=true; }
+{ which curl &> /dev/null; } || { printf "${red_arrow} ${yellow}'curl'${rs} not found, is it installed?\n"; ABORT=true; }
+{ which gcc &> /dev/null; } || { printf "${red_arrow} ${yellow}'gcc'${rs} not found, is it installed?\n"; ABORT=true; }
 if [ "$ABORT" == true ]; then
 	printf "\n${red_arrow} Such dependencies must be resolved\nExiting...\n\n"
 	exit 1;
@@ -29,8 +31,8 @@ fi
 
 # Prompts the user for the prompt choice
 printf "${cyan_arrow} What prompt should the terminal have?\n"
-echo " [1] Costumized lean style ${gray}(less misalignment prone)${rs}"
-echo " [2] Powerline style ${gray}(more stylish)${rs}"
+printf " [1] Costumized lean style ${detail}(less misalignment prone)${rs}\n"
+printf " [2] Powerline style ${detail}(more stylish when it works)${rs}\n"
 echo
 while true; do
 	read -p "[1/2] > " choice
@@ -53,8 +55,11 @@ echo
 {
 	printf "${cyan_arrow} Installing and building better basic terminal commands with cargo...\n"
 	echo "   This might take a few minutes..."
+	printf "${cyan_arrow} Building lsd...\n"
 	cargo install lsd -q
+	printf "${cyan_arrow} Building bat...\n"
 	cargo install --locked bat -q
+	printf "${cyan_arrow} Building fd-find...\n"
 	cargo install fd-find -q
 } || { printf "${red_arrow} Failed to build from cargo, exiting...\n"; exit 1; }
 
@@ -96,5 +101,28 @@ while true; do
 } || { printf "${red_arrow} Error, probably invalid password\n   Trying again (^C to cancel)\n\n"; continue; }
 break
 done
+
+#Install needed nerd font for symbols
+printf "${cyan_arrow} Downloading and installing symbols font for custom icons"
+function print_nofont_message() {
+	printf "${red_arrow} Could not install nerd font symbols\n"
+	echo "   You may see missing characters being displayed, to fix it, you need to install a nerd patched font"
+	echo "   https://www.nerdfonts.com/font-downloads"
+}
+{ which wget &> /dev/null; } || { printf "${red_arrow} ${yellow}'wget'${rs} not found\n"; NO_FONT=true; }
+{ which unzip &> /dev/null; } || { printf "${red_arrow} ${yellow}'unzip'${rs} not found\n"; NO_FONT=true; }
+if [ "$NO_FONT" == true ]; then
+	print_nofont_message
+else
+	{
+		wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/NerdFontsSymbolsOnly.zip
+		if [ ! -e ~/.local/share/fonts ]; then
+			printf "${cyan_arrow} User's fonts directory not found, creating one..."
+			mkdir ~/.local/share/fonts
+		fi
+		unzip NerdFontsSymbolsOnly.zip -d ~/.local/share/fonts/nerdsymbols
+
+	} || print_nofont_message
+fi
 
 printf "${cyan} Finished installing terminal${rs}\n\n"
