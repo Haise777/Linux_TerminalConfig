@@ -5,6 +5,8 @@
 
 #Define text color variables to use
 rs='\033[0m'
+gray='\033[0;30m'
+yellow='\033[0;33m'
 cyan='\033[0;96m'
 cyan_arrow=" \033[0;96m>${rs}"
 red_arrow=" \033[0;91m>${rs}"
@@ -16,19 +18,20 @@ SCRIPT_PATH="$(find ~/ -name "TerminalConfig_Linux")/files"
 
 # Checks for needed dependencies
 ABORT=false
-{ which which &> /dev/null; } || { printf "${red_arrow} 'which' not found, it is needed to check for installed dependencies\n\n"; exit 1; }
-{ which make &> /dev/null; } || { printf "${red_arrow} 'make' not found, is it installed?\n"; ABORT=true; }
-{ which zsh &> /dev/null; } || { printf "${red_arrow} 'zsh' not found, is it installed?\n"; ABORT=true; }
-{ which git &> /dev/null; } || { printf "${red_arrow} 'git' not found, is it installed?\n"; ABORT=true; }
+{ which which &> /dev/null; } || { printf "${red_arrow} ${yellow}'which'${rs} not found, it is needed to check for installed dependencies\n\n"; exit 1; }
+{ which make &> /dev/null; } || { printf "${red_arrow} ${yellow}'make'${rs} not found, is it installed?\n"; ABORT=true; }
+{ which zsh &> /dev/null; } || { printf "${red_arrow} ${yellow}'zsh'${rs} not found, is it installed?\n"; ABORT=true; }
+{ which git &> /dev/null; } || { printf "${red_arrow} ${yellow}'git'${rs} not found, is it installed?\n"; ABORT=true; }
 if [ "$ABORT" == true ]; then
-	printf "${red_arrow} Such dependencies must be resolved\nExiting...\n\n"
+	printf "\n${red_arrow} Such dependencies must be resolved\nExiting...\n\n"
 	exit 1;
 fi
 
 # Prompts the user for the prompt choice
 printf "${cyan_arrow} What prompt should the terminal have?\n"
-echo " [1] Costumized lean style (less misalignment prone)"
-echo " [2] Powerline style (more stylish)"
+echo " [1] Costumized lean style ${gray}(less misalignment prone)${rs}"
+echo " [2] Powerline style ${gray}(more stylish)${rs}"
+echo
 while true; do
 	read -p "[1/2] > " choice
 	case $choice in
@@ -37,6 +40,7 @@ while true; do
 		*) echo " Not a valid input!";;
 	esac
 done
+echo
 
 # Check if rust's cargo already exists, install it otherwise
 { which cargo &> /dev/null; } || {
@@ -48,6 +52,7 @@ done
 # Install some commands with the cargo package manager
 {
 	printf "${cyan_arrow} Installing and building better basic terminal commands with cargo...\n"
+	echo "   This might take a few minutes..."
 	cargo install lsd -q
 	cargo install --locked bat -q
 	cargo install fd-find -q
@@ -84,13 +89,12 @@ done
 } || { printf "${red_arrow} Failed to copy essential config files, exiting...\n"; exit 1; }
 
 # Prompts the user for changing their default terminal
-echo
 printf "${cyan_arrow} You will be prompted to enter your password in order to change the default terminal to .zsh\n"
 while true; do
 {
 	chsh -s "$(which zsh)"
-} || { printf "${red_arrow} Error, probably invalid password\n^C to cancel\n\n"; continue; }
+} || { printf "${red_arrow} Error, probably invalid password\n   Trying again (^C to cancel)\n\n"; continue; }
 break
 done
 
-printf "${cyan} Finished installing terminal${rs}\n"
+printf "${cyan} Finished installing terminal${rs}\n\n"
