@@ -12,16 +12,16 @@ red_arrow=" \033[0;91m>${rs}"
 printf "\n${cyan} Neatly terminal configuration installation script${rs}\n"
 printf "        Config and script made by \033[1;36m\033[4;36mHaise777${rs}\n\n"
 
-SCRIPT_PATH="$(find ~/ -name "custom-terminal")/files"
+SCRIPT_PATH="$(find ~/ -name "TerminalConfig_Linux")/files"
 
 # Checks for needed dependencies
 ABORT=false
-{ which which 2> /dev/null; } || { printf "${red_arrow} 'which' not found, it is needed to check for installed dependencies\n"; exit 1; }
-{ which make 2> /dev/null; } || { printf "${red_arrow} 'make' not found, is it installed?\n"; ABORT=true; }
-{ which zsh 2> /dev/null; } || { printf "${red_arrow} 'zsh' not found, is it installed?\n"; ABORT=true; }
-{ which git 2> /dev/null; } || { printf "${red_arrow} 'git' not found, is it installed?\n"; ABORT=true; }
+{ which which &> /dev/null; } || { printf "${red_arrow} 'which' not found, it is needed to check for installed dependencies\n\n"; exit 1; }
+{ which make &> /dev/null; } || { printf "${red_arrow} 'make' not found, is it installed?\n"; ABORT=true; }
+{ which zsh &> /dev/null; } || { printf "${red_arrow} 'zsh' not found, is it installed?\n"; ABORT=true; }
+{ which git &> /dev/null; } || { printf "${red_arrow} 'git' not found, is it installed?\n"; ABORT=true; }
 if [ "$ABORT" == true ]; then
-	printf "${red_arrow} Such dependencies must be resolved\nExiting...\n"
+	printf "${red_arrow} Such dependencies must be resolved\nExiting...\n\n"
 	exit 1;
 fi
 
@@ -30,7 +30,7 @@ printf "${cyan_arrow} What prompt should the terminal have?\n"
 echo " [1] Costumized lean style (less misalignment prone)"
 echo " [2] Powerline style (more stylish)"
 while true; do
-	read choice
+	read -p "[1/2] > " choice
 	case $choice in
 		1) SHOULD_POWERLINE=false; break;;
 		2) SHOULD_POWERLINE=true; break;;
@@ -39,7 +39,7 @@ while true; do
 done
 
 # Check if rust's cargo already exists, install it otherwise
-{ which cargo 2> /dev/null; } || {
+{ which cargo &> /dev/null; } || {
 	printf "${cyan_arrow} Rust's cargo not found, installing it now...\n"
 	curl https://sh.rustup.rs -sSf | sh -s -- -y
 	source "$HOME/.cargo/env"
@@ -48,9 +48,9 @@ done
 # Install some commands with the cargo package manager
 {
 	printf "${cyan_arrow} Installing and building better basic terminal commands with cargo...\n"
-	cargo install lsd
-	cargo install --locked bat
-	cargo install fd-find
+	cargo install lsd -q
+	cargo install --locked bat -q
+	cargo install fd-find -q
 } || { printf "${red_arrow} Failed to build from cargo, exiting...\n"; exit 1; }
 
 # Clone plugins from the git
