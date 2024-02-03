@@ -147,7 +147,7 @@ if [ "$no_font" == true ]; then
 	print_nofont_message
 else
 	{
-		font_path=~"/.local/share/fonts/MesloLGS-Nerd"
+		font_path=~/.local/share/fonts/MesloLGS-Nerd
 		if [ ! -e ~/.local/share/fonts ]; then
 			print_cyan "User's fonts directory not found, creating one..."
 			mkdir ~/.local/share/fonts
