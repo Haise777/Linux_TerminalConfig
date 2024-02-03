@@ -2,7 +2,7 @@
 #GitHub: https://github.com/Haise777
 
 # shellcheck disable=SC2059
-SCRIPT_PATH="$(find ~/ -name "TerminalConfig_Linux")/files"
+script_path="$(find ~/ -name "TerminalConfig_Linux")/files"
 
 #Define text color variables to use
 rs='\033[0m'
@@ -18,7 +18,7 @@ function print_red() { printf " \033[0;91m>${rs} $1\n"; }
 function check_dependency() {
 	{ which "$1" &> /dev/null; } || {
 		print_red "${yellow}'$1'${rs} not found, is it installed?"
-		ABORT=true
+		abort=true
 	}
 }
 
@@ -26,50 +26,21 @@ function print_nofont_message() {
 	print_red "Could not install a nerd font"
 	echo "   You may see missing characters being displayed, to fix it, you just need to install a nerd patched font"
 	echo "   https://www.nerdfonts.com/font-downloads"
-	printf "   you can try to install the font again by passing this arg to the script:\n   ${cyan}\$${rs} ./install.sh --install-font\n"
 }
 
 function check_font_dependency() {
 	{ which "$1" &> /dev/null; } || { 
 		print_red "${yellow}'$1'${rs} not found" 
-		NO_FONT=true; 
+		no_font=true; 
 	}
-}
-
-#Install needed nerd font for symbols
-function install_font() {
-
-	print_cyan "Downloading and installing symbols font for custom icons"
-	check_font_dependency "wget"
-	check_font_dependency "unzip"
-	if [ "$NO_FONT" == true ]; then
-		print_nofont_message
-	else
-		{
-			wget -q http://github.com/andreberg/Meslo-Font/archive/master.zip -P "$SCRIPT_PATH"
-			if [ ! -e ~/.local/share/fonts ]; then
-			print_cyan "User's fonts directory not found, creating one..."
-			mkdir ~/.local/share/fonts
-			fi
-			unzip "$SCRIPT_PATH/master.zip" -d "$SCRIPT_PATH/meslolg"
-			rm "$SCRIPT_PATH/master.zip"
-			unzip "$SCRIPT_PATH/meslolg/Meslo-Font-master/dist/v1.2.1/Meslo LG v1.2.1.zip"\
-				-d ~/.local/share/fonts/MesloLG-Nerd
-			rm -rf "$SCRIPT_PATH/meslolg"
-			fc-cache -rf
-			printf "${cyan}Note:${rs} If you still see missing icons, you may also need to change your terminal to use a nerd font.\n\n"
-	
-		} || print_nofont_message
-	fi
 }
 
 
 # Passed arguments validation
-POWERLINE=false
+powerline=false
 
 case "$1" in
-	"--powerline") POWERLINE=true;;
-	"--install-font") install_font; exit 0;;
+	"--powerline") powerline=true;;
 	"" ) echo > /dev/null;;
 	* ) "Invalid script argument"; exit 1;;
 esac
@@ -86,13 +57,13 @@ printf "        Config and script made by \033[1;36m\033[4;36mHaise777${rs}\n\n"
 	exit 1; 
 }
 
-ABORT=false
+abort=false
 check_dependency "make"
 check_dependency "zsh"
 check_dependency "git"
 check_dependency "curl"
 check_dependency "gcc"
-if [ "$ABORT" == true ]; then
+if [ "$abort" == true ]; then
 	echo
 	print_red "Such dependencies must be resolved\n Exiting...\n"
 	exit 1;
@@ -100,7 +71,7 @@ fi
 
 
 # Prompts the user for the prompt choice
-if [ "$POWERLINE" == false ]; then
+if [ "$powerline" == false ]; then
 	print_cyan "What prompt should the terminal have?"
 	printf " [1] Costumized lean style ${detail}(less misalignment prone)${rs}\n"
 	printf " [2] Powerline style ${detail}(more stylish when it works)${rs}\n"
@@ -108,8 +79,8 @@ if [ "$POWERLINE" == false ]; then
 	while true; do
 		read -p "[1/2] > " choice
 		case $choice in
-			1) SHOULD_POWERLINE=false; break;;
-			2) SHOULD_POWERLINE=true; break;;
+			1) should_powerline=false; break;;
+			2) should_powerline=true; break;;
 			*) echo " Not a valid input!";;
 		esac
 	done
@@ -153,23 +124,49 @@ fi
 # Move the configuration files to their destination
 {
 	print_cyan "Moving the config files to their destination"
-	\cp -r "$SCRIPT_PATH/.zshrc" "$HOME/"
-	\cp -r "$SCRIPT_PATH/custom/"*.zsh ~/.oh-my-zsh/custom/
+	\cp -r "$script_path/.zshrc" "$HOME/"
+	\cp -r "$script_path/custom/"*.zsh ~/.oh-my-zsh/custom/
 
-	if [ "$SHOULD_POWERLINE" == true ] || [ "$POWERLINE" == true ]; then \cp -r "$SCRIPT_PATH/.p10k.zsh" "$HOME/"
-	else \cp -r "$SCRIPT_PATH/.p10k-no-powerline.zsh" "$HOME/.p10k.zsh"; fi
+	if [ "$should_powerline" == true ] || [ "$powerline" == true ]; then \cp -r "$script_path/.p10k.zsh" "$HOME/"
+	else \cp -r "$script_path/.p10k-no-powerline.zsh" "$HOME/.p10k.zsh"; fi
 
 	if [ ! -e ~/.config ]; then
 		print_cyan ".config not found in your home directory, creating one"
 		mkdir ~/.config
 	fi
-	\cp -r "$SCRIPT_PATH/.config/"* "$HOME/.config/"
+	\cp -r "$script_path/.config/"* "$HOME/.config/"
 	
 } || { print_red "Failed to copy essential config files, exiting..."; exit 1; }
 
 
 #Install needed nerd font for symbols
-install_font
+print_cyan "Downloading and installing symbols font for custom icons"
+check_font_dependency "wget"
+check_font_dependency "unzip"
+if [ "$no_font" == true ]; then
+	print_nofont_message
+else
+	{
+		font_path=~"/.local/share/fonts/MesloLGS-Nerd"
+		if [ ! -e ~/.local/share/fonts ]; then
+			print_cyan "User's fonts directory not found, creating one..."
+			mkdir ~/.local/share/fonts
+		fi
+		mkdir "$font_path"
+		curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf\
+			--output "$font_path"/'MesloLGS NF Regular.ttf'
+		curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf\
+			--output "$font_path"/'MesloLGS NF Bold.ttf'
+		curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf\
+			--output "$font_path"/'MesloLGS NF Italic.ttf'
+		curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf\
+			--output "$font_path"/'MesloLGS NF Bold Italic.ttf'
+
+		fc-cache -rf
+		printf " ${cyan}Note:${rs} If you still see missing icons, you may also need to change your terminal to use a nerd font.\n\n"
+
+	} || print_nofont_message
+fi
 
 
 # Prompts the user for changing their default terminal
@@ -182,4 +179,4 @@ break
 done
 
 
-printf "${cyan} Finished installing terminal${rs}\n"
+printf "${cyan} Finished installing your new terminal configuration${rs}\n"
