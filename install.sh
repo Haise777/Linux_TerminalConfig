@@ -154,14 +154,20 @@ check_font_dependency "unzip"
 if [ "$NO_FONT" == true ]; then
 	print_nofont_message
 else
-	{
-		wget http://github.com/andreberg/Meslo-Font/archive/master.zip
+	{ #silence wget and redirect its download to the script folder
+		wget -q http://github.com/andreberg/Meslo-Font/archive/master.zip -P "$SCRIPT_PATH"
 		if [ ! -e ~/.local/share/fonts ]; then
 			print_cyan "User's fonts directory not found, creating one..."
 			mkdir ~/.local/share/fonts
 		fi
-		unzip master.zip -d ~/.local/share/fonts/MesloLG-Nerd
+		unzip "$SCRIPT_PATH/master.zip" -d "$SCRIPT_PATH/meslolg"
+		rm "$SCRIPT_PATH/master.zip"
+		unzip "$SCRIPT_PATH/meslolg/Meslo-Font-master/dist/v1.2.1/'Meslo LG v1.2.1.zip'"\
+			-d ~/.local/share/fonts/MesloLG-Nerd
+		rm -rf "$SCRIPT_PATH/meslolg"
+		fc-cache -rf
 		printf "${cyan}Note:${rs} If you still see missing icons, you may also need to change your terminal to use a nerd font.\n\n"
+	
 	} || print_nofont_message
 fi
 
