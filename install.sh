@@ -10,14 +10,6 @@ detail='\033[0;36m'
 yellow='\033[0;33m'
 cyan='\033[0;96m'
 
-# Passed arguments validation
-POWERLINE=false
-
-case "$1" in
-	"--powerline") POWERLINE=true;;
-	"" ) echo > /dev/null;;
-	* ) "Invalid script argument"; exit 1;;
-esac
 
 # Early function definition
 function print_cyan() { printf " \033[0;96m>${rs} $1\n"; }
@@ -31,9 +23,10 @@ function check_dependency() {
 }
 
 function print_nofont_message() {
-	print_red "Could not install nerd font symbols"
-	echo "   You may see missing characters being displayed, to fix it, you need to install a nerd patched font"
+	print_red "Could not install a nerd font"
+	echo "   You may see missing characters being displayed, to fix it, you just need to install a nerd patched font"
 	echo "   https://www.nerdfonts.com/font-downloads"
+	printf "   you can try to install the font again by passing this arg to the script:\n   ${cyan}\$${rs} ./install.sh --install-font\n"
 }
 
 function check_font_dependency() {
@@ -42,6 +35,44 @@ function check_font_dependency() {
 		NO_FONT=true; 
 	}
 }
+
+#Install needed nerd font for symbols
+function install_font() {
+
+	print_cyan "Downloading and installing symbols font for custom icons"
+	check_font_dependency "wget"
+	check_font_dependency "unzip"
+	if [ "$NO_FONT" == true ]; then
+		print_nofont_message
+	else
+		{
+			wget -q http://github.com/andreberg/Meslo-Font/archive/master.zip -P "$SCRIPT_PATH"
+			if [ ! -e ~/.local/share/fonts ]; then
+			print_cyan "User's fonts directory not found, creating one..."
+			mkdir ~/.local/share/fonts
+			fi
+			unzip "$SCRIPT_PATH/master.zip" -d "$SCRIPT_PATH/meslolg"
+			rm "$SCRIPT_PATH/master.zip"
+			unzip "$SCRIPT_PATH/meslolg/Meslo-Font-master/dist/v1.2.1/Meslo LG v1.2.1.zip"\
+				-d ~/.local/share/fonts/MesloLG-Nerd
+			rm -rf "$SCRIPT_PATH/meslolg"
+			fc-cache -rf
+			printf "${cyan}Note:${rs} If you still see missing icons, you may also need to change your terminal to use a nerd font.\n\n"
+	
+		} || print_nofont_message
+	fi
+}
+
+
+# Passed arguments validation
+POWERLINE=false
+
+case "$1" in
+	"--powerline") POWERLINE=true;;
+	"--install-font") install_font; exit 0;;
+	"" ) echo > /dev/null;;
+	* ) "Invalid script argument"; exit 1;;
+esac
 
 
 # Print script introduction
@@ -137,6 +168,10 @@ fi
 } || { print_red "Failed to copy essential config files, exiting..."; exit 1; }
 
 
+#Install needed nerd font for symbols
+install_font
+
+
 # Prompts the user for changing their default terminal
 print_cyan "You will be prompted to enter your password in order to change the default terminal to .zsh"
 while true; do {
@@ -145,31 +180,6 @@ while true; do {
 } || { print_red "Error, probably invalid password\n   Trying again (^C to cancel)\n"; continue; }
 break
 done
-
-
-#Install needed nerd font for symbols
-print_cyan "Downloading and installing symbols font for custom icons"
-check_font_dependency "wget"
-check_font_dependency "unzip"
-if [ "$NO_FONT" == true ]; then
-	print_nofont_message
-else
-	{ #silence wget and redirect its download to the script folder
-		wget -q http://github.com/andreberg/Meslo-Font/archive/master.zip -P "$SCRIPT_PATH"
-		if [ ! -e ~/.local/share/fonts ]; then
-			print_cyan "User's fonts directory not found, creating one..."
-			mkdir ~/.local/share/fonts
-		fi
-		unzip "$SCRIPT_PATH/master.zip" -d "$SCRIPT_PATH/meslolg"
-		rm "$SCRIPT_PATH/master.zip"
-		unzip "$SCRIPT_PATH/meslolg/Meslo-Font-master/dist/v1.2.1/'Meslo LG v1.2.1.zip'"\
-			-d ~/.local/share/fonts/MesloLG-Nerd
-		rm -rf "$SCRIPT_PATH/meslolg"
-		fc-cache -rf
-		printf "${cyan}Note:${rs} If you still see missing icons, you may also need to change your terminal to use a nerd font.\n\n"
-	
-	} || print_nofont_message
-fi
 
 
 printf "${cyan} Finished installing terminal${rs}\n"
