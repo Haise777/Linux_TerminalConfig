@@ -98,7 +98,7 @@ fi
 
 # Install some commands with the cargo package manager
 {
-	print_cyan "Installing and building better basic terminal commands with cargo..."
+	print_cyan "Installing and building better terminal commands with cargo..."
 	echo "   This might take a few minutes..."
 	print_cyan "Building lsd..."
 	cargo install lsd -q
@@ -107,7 +107,12 @@ fi
 	print_cyan "Building fd-find..."
 	cargo install fd-find -q
 
-} || { print_red "Failed to build from cargo, exiting..."; exit 1; }
+} || { 
+	print_red "Failed to build from cargo"
+	echo "   If you are on a Debian based distro, you could be missing ${cyan}'gcc-multilib'${rs}"
+	echo "   Exiting..."
+	exit 1
+}
 
 
 # Clone plugins from the git
@@ -179,4 +184,4 @@ break
 done
 
 
-printf "${cyan} Finished installing your new terminal configuration${rs}\n"
+printf "${cyan} Finished installing your new terminal${rs}\n"
