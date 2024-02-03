@@ -155,15 +155,15 @@ if [ "$NO_FONT" == true ]; then
 	print_nofont_message
 else
 	{
-		wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/NerdFontsSymbolsOnly.zip
+		wget http://github.com/andreberg/Meslo-Font/archive/master.zip
 		if [ ! -e ~/.local/share/fonts ]; then
 			print_cyan "User's fonts directory not found, creating one..."
 			mkdir ~/.local/share/fonts
 		fi
-		unzip NerdFontsSymbolsOnly.zip -d ~/.local/share/fonts/nerdsymbols
-
+		unzip master.zip -d ~/.local/share/fonts/MesloLG-Nerd
+		printf "${cyan}Note:${rs} If you still see missing icons, you may also need to change your terminal to use a nerd font.\n\n"
 	} || print_nofont_message
 fi
 
 
-printf "${cyan} Finished installing terminal${rs}\n\n"
+printf "${cyan} Finished installing terminal${rs}\n"
