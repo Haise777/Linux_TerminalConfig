@@ -109,7 +109,7 @@ fi
 
 } || { 
 	print_red "Failed to build from cargo"
-	printf "   If you are on a Debian based distro, you could be missing ${cyan}'gcc-multilib'${rs}\n"
+	printf "   If you are on a ${cyan}Debian based${rs} distro, you could be missing ${cyan}'gcc-multilib'${rs}\n"
 	echo "   Exiting..."
 	exit 1
 }
