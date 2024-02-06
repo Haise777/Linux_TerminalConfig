@@ -146,7 +146,6 @@ fi
 
 #Install needed nerd font for symbols
 print_cyan "Downloading and installing symbols font for custom icons"
-check_font_dependency "wget"
 check_font_dependency "unzip"
 if [ "$no_font" == true ]; then
 	print_nofont_message
