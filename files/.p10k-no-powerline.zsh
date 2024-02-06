@@ -192,7 +192,7 @@
   # Custom icon.
   # typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='[$_p9k_os_icon]'
   typeset -g POWERLEVEL9K_OS_ICON_PREFIX=' '
-  typeset -g POWERLEVEL9K_OS_ICON_SUFFIX=' '
+  typeset -g POWERLEVEL9K_OS_ICON_SUFFIX='  '
   ################################[ prompt_char: prompt symbol ]################################
   # Green prompt symbol if the last command succeeded.
   typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=79
@@ -497,7 +497,7 @@
   # Custom icon.
   typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_EXPANSION=
   # Custom prefix.
-  typeset -g POWERLEVEL9K_VCS_PREFIX='%63F::('
+  typeset -g POWERLEVEL9K_VCS_PREFIX=' %63F::('
   typeset -g POWERLEVEL9K_VCS_SUFFIX='%63F)'
 
   # Show status of repositories of these types. You can add svn and/or hg if you are
