@@ -131,6 +131,7 @@ fi
 	print_cyan "Moving the config files to their destination"
 	\cp -r "$script_path/.zshrc" "$HOME/"
 	\cp -r "$script_path/custom/"*.zsh ~/.oh-my-zsh/custom/
+	\cp -r "$script_path/custom/scripts" ~/.oh-my-zsh/custom/
 
 	if [ "$should_powerline" == true ] || [ "$powerline" == true ]; then \cp -r "$script_path/.p10k.zsh" "$HOME/"
 	else \cp -r "$script_path/.p10k-no-powerline.zsh" "$HOME/.p10k.zsh"; fi
